@@ -1,8 +1,6 @@
-set nocompatible  " must be first line
 """"pathogen
 execute pathogen#infect()
 filetype plugin on
-filetype plugin indent on
 
 " IMPORTANT: Uncomment one of the following lines to force
 " " using 256 colors (or 88 colors) if your terminal supports it,
@@ -15,6 +13,7 @@ set t_Co=256
 "COLORSCHEME
 syntax enable
 set background=dark
+colorscheme base16-ateliersavanna
 " or, for the light background mode:
 " set background=light
 " colorscheme base16-atelierdune
@@ -25,18 +24,16 @@ set background=dark
 " colorscheme base16-ateliercave
 " colorscheme base16-ateliersulphurpool
 " colorscheme base16-atelierlakeside
-colorscheme base16-ateliersavanna
 " colorscheme base16-atelierseaside
 " colorscheme base16-atelierdune
 " colorscheme base16-atelierestuary
 let g:airline_theme='one'
 
-let g:csv_autocmd_arrange = 1
+" let g:csv_autocmd_arrange = 1
 
 syn on
 syntax enable
-":se syn=c
-:se nu
+set number
 " Be smart when using tabs ;)
 set smarttab
 set expandtab
@@ -73,10 +70,9 @@ set noshowmode
 "set lbr
 "set tw=500
 
-set ai "Auto indent
-set si "Smart indent
+set autoindent
+" set si "Smart indent
 set wrap "Wrap lines
-"set background=dark 
 set incsearch                   " find as you type search
 set backspace=indent,eol,start  " backspace for dummies
 set linespace=0                 " No extra spaces between rows
@@ -88,7 +84,6 @@ set smartcase                   " case sensitive when uc present
 set wildmenu                    " show list instead of just completing
 set wildmode=list:longest,full
 set wildignore=*.meta
-" set whichwrap=b,s,h,l,<,>,[,]   " backspace and cursor keys wrap to
 set scrolljump=5                " lines to scroll when cursor leaves screen
 set scrolloff=3                 " minimum lines to keep above and below cursor
 " set foldenable                  " auto fold code
@@ -99,10 +94,10 @@ set listchars=tab:,.,extends:#,nbsp:. " Highlight problematic whitespace
 xnoremap . :norm.<CR>
 
 " Start interactive EasyAlign in visual mode (e.g. vipga)
- xmap ga <Plug>(EasyAlign)
+xmap ga <Plug>(EasyAlign)
 
 " " Start interactive EasyAlign for a motion/text object (e.g. gaip)
- nmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
 
 let mapleader = "\<Space>"
 nnoremap <Leader>w :w<CR>
@@ -113,9 +108,8 @@ nnoremap <Leader><Space> :w<CR>
 nnoremap <Leader>L :pu! _<CR>:']+1<CR>
 nnoremap <Leader>l :pu  _<CR>:'[-1<CR>
 
-"Dash search
-:nmap <silent> <leader>d <Plug>DashSearch
-
+" "Dash search
+" :nmap <silent> <leader>d <Plug>DashSearch
 
 "MOVEMENT
 nnoremap j gj
@@ -133,7 +127,9 @@ map! <Help> <Esc>
 map  <Insert> <Esc>
 map! <Insert> <Esc>
 
+"toggle line numbers
 nmap \1 :setlocal number!<CR>
+"toggle paste
 nmap \p :set paste!<CR>
 
 cmap w!! w !sudo tee % >/dev/null
@@ -167,27 +163,9 @@ let g:is_posix = 1
 " Treat <li> and <p> tags like the block tags they are
 let g:html_indent_tags = 'li\|p'
 
-" function! BuildAndRun()
-"   if (&ft=='cs')
-"     silent !~/.vim/play_unity.command
-"   elseif (&ft=='javascript' || &ft == 'html')
-"     silent !~/.vim/reload_chrome.command
-"   elseif (&ft=='markdown')
-"     execute "silent !~/.vim/open_in_marked.command " . expand('%:p')
-"   else
-"     silent !~/.vim/build_and_run_xcode.command
-"   endif
-"   redraw!
-" endfunction
 
-" nmap <leader>r :call BuildAndRun()<CR>
-
-"will try to disable to force myself to learn C-J
-"nmap <leader><Up> <C-w><Up>
-"nmap <leader><Down> <C-w><Down>
-"nmap <leader><Left> <C-w><Left>
-"nmap <leader><Right> <C-w><Right>
-"nmap <leader>s <C-w>s
+"Gundo
+nnoremap <F5> :GundoToggle<CR>
 
 "next and previous buffer
 nmap <leader>n :bn<CR>
@@ -203,13 +181,17 @@ nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
+" vv to generate new vertical split
+nnoremap <silent> vv <C-w>v
+nnoremap <silent> zz <C-w>n
+
 "fzf
 set rtp+=/usr/local/opt/fzf
 
-" vv to generate new vertical split
-nnoremap <silent> vv <C-w>v
-nnoremap <silent> nn <C-w>n
-
+""""""""""""""""""""""""""""""""""
+"Vimux
+""""""""""""""""""""""""""""""""""
+let g:VimuxUseNearest =1
 " Prompt for a command to run
 map <Leader>vp :VimuxPromptCommand<CR>
 
@@ -222,24 +204,31 @@ map <Leader>vi :VimuxInspectRunner<CR>
 " Zoom the tmux runner pane
 map <Leader>vz :VimuxZoomRunner<CR>
 
+" Close normal app & run command
+nnoremap <Leader>r :w<CR> :call VimuxSendKeys("^C")<CR> :VimuxRunLastCommand<CR>
+" Close esp32 monitor & run command
+nnoremap <Leader>u :w<CR> :call VimuxSendKeys("^]")<CR> :VimuxRunLastCommand<CR>
+
+" Kill normal command
+nnoremap <Leader>vk :call VimuxSendKeys("^C")<CR>
+" Kill esp32 monitor
+nnoremap <Leader>v] :call VimuxSendKeys("^]")<CR>
+
 let g:tmux_navigator_save_on_switch =1
 let g:tmux_navigator_disable_when_zoomed = 1
 
-set viminfo^=%
+"try the built-in make
+nnoremap <Leader>m :make<CR>
+autocmd QuickFixCmdPost * copen
 
-let g:ags_agargs = {
-  \ '--break'             : [ '', '' ],
-  \ '--color'             : [ '', '' ],
-  \ '--color-line-number' : [ '"1;30"', '' ],
-  \ '--color-match'       : [ '"32;40"', '' ],
-  \ '--color-path'        : [ '"1;31"', '' ],
-  \ '--column'            : [ '', '' ],
-  \ '--context'           : [ 'g:ags_agcontext', '-C', '3' ],
-  \ '--filename'          : [ '', '' ],
-  \ '--group'             : [ '', '' ],
-  \ '--heading'           : [ '', '-H' ],
-  \ '--max-count'         : [ 'g:ags_agmaxcount', '-m', '2000' ],
-  \ '--numbers'           : [ '', '' ]
-  \ }
+autocmd FileType python setlocal expandtab shiftwidth=4
+
+" " autosource vimrc
+" augroup VimrcSource
+"   " autocmd! " Remove all autocmd's for the VimrcSource group
+"   autocmd BufWritePost .vimrc source $MYVIMRC
+" augroup END
+
+set viminfo^=%
 
 
